@@ -1,0 +1,30 @@
+{
+  "name": "mac-installer-web",
+  "version": "1.2.0",
+  "description": "web service for mac installer",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BoOpenfin/mac-installer-web.git"
+  },
+  "keywords": [
+    "openfin",
+    "installer",
+    "mac"
+  ],
+  "author": "bo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BoOpenfin/mac-installer-web/issues"
+  },
+  "homepage": "https://github.com/BoOpenfin/mac-installer-web#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mac-installer": "^1.1.0"
+  }
+}

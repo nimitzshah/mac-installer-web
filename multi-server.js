@@ -1,12 +1,11 @@
 const cluster = require('cluster');
 const numCPUs = 50;
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require(`path`);
 const fs = require('fs')
 
-var packager = require('mac-installer')
+const download = require("./download.js");
 
 if (cluster.isMaster) {
   // Fork workers.
@@ -36,33 +35,7 @@ if (cluster.isMaster) {
       // [END add_display_form]
       
       // [START add_post_handler]
-    app.post('/submit', (req, res) => {
-        console.log(`worker #${cluster.worker.id} deal with:`);
-        console.log({
-            name: req.body.name,
-            message: req.body.message
-        });
-        packager({
-            flags:{
-                "c" : req.body.message,
-                "n" : req.body.name,
-                "f" : cluster.worker.id.toString()
-            }
-        },function done (err) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    console.log(`worker #${cluster.worker.id} Successfully create dmg file!`);
-                    res.writeHead(200, {
-                        "Content-Type": "application/octet-stream",
-                        "Content-Disposition": "attachment; filename=" + req.body.name + ".dmg"
-                    });
-                    fs.createReadStream(path.resolve(__dirname, cluster.worker.id.toString(), (req.body.name + ".dmg"))).pipe(res);
-                }
-            }
-        );
-    });
+    app.post('/submit', download.downloadMAC);
 
     // Listen to the App Engine-specified port, or 8080 otherwise
     const PORT = process.env.PORT || 8080;

@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/BoOpenfin/mac-installer-web#readme",
   "dependencies": {
+    "winston": "latest",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "mac-installer": "^1.4.0"

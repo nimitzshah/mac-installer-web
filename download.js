@@ -5,8 +5,29 @@ var request = require('request');
 var packager = require('../mac-installer')
 const cluster = require('cluster');
 
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, label, printf } = format;
+const myFormat = printf(({ level, message, label, timestamp }) => {
+  return `${timestamp} [${label}] ${level}: ${message}`;
+});
+
+const logger = createLogger({
+  format: combine(
+    label({ label: 'MINI SERVICE' }),
+    timestamp(),
+    myFormat
+  ),
+  transports: [
+    new transports.Console(),
+    new transports.File({ filename: 'service.log' })
+  ]
+});
+
 function downloadMAC(req, res) {
-  console.log(`worker #${cluster.worker.id} deal with:`);
+  logger.log({
+    level: 'info',
+    message: `request recieved for worker #${cluster.worker.id}`
+  });
   var download = {}; //HACK
   download.outputFile = req.body.name;
   download.config = req.body.message;
@@ -16,26 +37,33 @@ function downloadMAC(req, res) {
   download._fileName = (download.outputFile || "openfin-installer") + ".dmg";
   download._path = path.join(download._folder, download._fileName);
 
-    serviceInfo = "download_service_mac";
-
-    console.log('steps define');
-
-  // End of chain and error catch
   produceMacFile(download)
     .then(() => {
-      console.log(`worker #${cluster.worker.id} Successfully create dmg file!`);
+      logger.log({
+        level: 'info',
+        message: `successfully create dmg: ${download.outputFile} with ${download.config}`
+      });
       return new Promise(resolve => {
         res.download(download._path, err => {
           if (err) {
-            console.log(err);
-            res.status(err.status).end();
+            logger.log({
+              level: 'error',
+              message: `unable to send dmg: ${err}`
+            });
+            if(err.status)
+              res.status(err.status).end();
+            else
+              res.status(500).send("Something went wrong. Please contact support@openfin.co");
           }
           resolve();
         });
       });
     })
     .catch(err => {
-        console.log(err);
+      logger.log({
+        level: 'error',
+        message: `unable to create ${download.outputFile} with ${download.config}: ${err}`
+      });
       res
         .status(500)
         .send("Something went wrong. Please contact support@openfin.co");
@@ -44,8 +72,10 @@ function downloadMAC(req, res) {
       // Cleanup
       fse.remove(download._folder, err => {
         if (err) {
-            console.log(err);
-            console.log('err delete');
+          logger.log({
+            level: 'error',
+            message: `unable to delete tmp file: ${err}`
+          });
         }
       });
     });
@@ -55,7 +85,6 @@ function downloadMAC(req, res) {
 // Call Mac Installer Service
 //=====================================================================
 function produceMacFile(download) {
-  console.log('inside produceMacFile');
   return new Promise((resolve, reject) => {
    packager({
       flags:{
@@ -65,10 +94,9 @@ function produceMacFile(download) {
       }
     },function done (err) {
       if (err) {
-        console.log(err);
+        reject(err);
       }
       else {
-        console.log('succ');
         resolve();
       }
     });

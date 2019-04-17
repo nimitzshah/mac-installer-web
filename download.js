@@ -64,9 +64,8 @@ function downloadMAC(req, res) {
         level: 'error',
         message: `unable to create ${download.outputFile} with ${download.config}: ${err}`
       });
-      res
-        .status(500)
-        .send("Something went wrong. Please contact support@openfin.co");
+      res.statusMessage = err;
+      res.status(500).end();
     })
     .then(() => {
       // Cleanup

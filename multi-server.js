@@ -1,5 +1,5 @@
 const cluster = require('cluster');
-const numCPUs = 50;
+const numCPUs = 40;
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require(`path`);
@@ -38,7 +38,7 @@ if (cluster.isMaster) {
     app.post('/submit', download.downloadMAC);
 
     // Listen to the App Engine-specified port, or 8080 otherwise
-    const PORT = process.env.PORT || 8080;
+    const PORT = process.env.PORT || 8556;
     app.listen(PORT, () => {
         console.log(`I am worker #${cluster.worker.id}`);
     });

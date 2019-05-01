@@ -1,9 +1,10 @@
 const cluster = require('cluster');
-const numCPUs = 40;
+const numCPUs = 20;
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require(`path`);
 const fs = require('fs')
+const https = require('https');
 
 const download = require("./download.js");
 
@@ -39,7 +40,12 @@ if (cluster.isMaster) {
 
     // Listen to the App Engine-specified port, or 8080 otherwise
     const PORT = process.env.PORT || 8556;
-    app.listen(PORT, () => {
+
+    https.createServer({
+      key: fs.readFileSync('openfinco2017.key'),
+      cert: fs.readFileSync('openfinco2017.crt')
+    }, app)
+    .listen(PORT, () => {
         console.log(`I am worker #${cluster.worker.id}`);
     });
 }

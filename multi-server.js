@@ -5,6 +5,9 @@ const bodyParser = require('body-parser');
 const path = require(`path`);
 const fs = require('fs')
 const https = require('https');
+const serviceUtils = require("@openfin/service-utils");
+const osu = serviceUtils.default("mac-installer-service");
+const statsd = serviceUtils.makeStatsD("mac-installer-service");
 
 const download = require("./download.js");
 
@@ -13,6 +16,12 @@ if (cluster.isMaster) {
   for (var i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
+
+  osu.logger.addFields({'test':'testing'}).info(`Test Logger.`);
+  statsd.increment("install.mac-installer.start", 1, 1, [
+    `env:${process.env.OPENFIN_ENV}`,
+    "download_service"
+  ]);
 
   cluster.on('exit', (worker, code, signal) => {
     console.log(`worker ${worker.process.pid} died`);

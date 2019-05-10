@@ -28,14 +28,19 @@ if (cluster.isMaster) {
     app.get('/', (req, res) => {
         res.send('Hello from App Engine!');
       });
+
+    app.get("/health", (req, res) => {
+      res.setHeader("Content-type", "text/plain");
+      res.status(200).send("hello");
+    });
       
-      // [START add_display_form]
-      app.get('/submit', (req, res) => {
-        res.sendFile(path.join(__dirname, '/views/form.html'));
-      });
-      // [END add_display_form]
+    // [START add_display_form]
+    app.get('/submit', (req, res) => {
+      res.sendFile(path.join(__dirname, '/views/form.html'));
+    });
+    // [END add_display_form]
       
-      // [START add_post_handler]
+    // [START add_post_handler]
     app.post('/submit', download.downloadMAC);
 
     // Listen to the App Engine-specified port, or 8080 otherwise

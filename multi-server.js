@@ -35,8 +35,12 @@ if (cluster.isMaster) {
     // [END enable_parser]
 
     app.get('/', (req, res) => {
-        res.send('Hello from App Engine!');
-      });
+      res.send('Hello from App Engine!');
+    });
+
+    app.get('/favicon.ico', (req, res) => {
+      res.sendFile(path.join(__dirname, '/views/favicon.ico'));
+    });
 
     app.get("/health", (req, res) => {
       res.setHeader("Content-type", "text/plain");

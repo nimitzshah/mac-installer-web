@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/BoOpenfin/mac-installer-web#readme",
   "dependencies": {
-    "@openfin/service-utils": "10.1.0",
+    "@openfin/service-utils": "11.2.0",
     "winston": "latest",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
